@@ -1,5 +1,6 @@
 import csv
 from random import random
+from math import floor
 
 starting_bracket = [{"name": "one", "seed": 1},
                     {"name": "sixteen", "seed": 16},
@@ -17,6 +18,55 @@ starting_bracket = [{"name": "one", "seed": 1},
                     {"name": "ten", "seed": 10},
                     {"name": "two", "seed": 2},
                     {"name": "fifteen", "seed": 15}]
+
+class Bracket():
+    bracket = []
+    matchup_stats = []
+
+    def progress_bracket(self, pick_winner):
+        last_round_winners = list.copy(self.bracket[-1])
+        while len(last_round_winners) > 1:
+            i = 0 
+            winners = []
+            while i < (len(last_round_winners)):
+                winners.append(pick_winner(last_round_winners[i], last_round_winners[i+1]))
+                i += 2
+            self.bracket.append(winners)
+            last_round_winners = list.copy(winners)
+        print(self.bracket)
+
+    def __init__(self, initial_bracket, pick_winner):
+        self.bracket.append(initial_bracket)
+        self.first_round_size = len(initial_bracket)
+        self.progress_bracket(pick_winner)
+
+    def pivot(self, bracket, output_list, level):
+        midpoint_idx = floor(len(output_list)/2)
+        output_list[midpoint_idx] = "{}{}".format(" " * 10 * level, bracket[level].pop(0)["name"])
+        if level > 0:
+            output_list[:midpoint_idx] = self.pivot(bracket, [None] * len(output_list[:midpoint_idx]), level - 1)
+            output_list[midpoint_idx+1:] = self.pivot(bracket, [None] * len(output_list[:midpoint_idx]), level -1)
+        return output_list
+
+    def print_bracket(self):
+        output_list = [None] * (self.first_round_size * 2 - 1)
+        bracket_to_pop = list.copy(self.bracket)
+        level = len(self.bracket) - 1
+        output_list = self.pivot(bracket_to_pop, output_list, level)
+        for item in output_list:
+            print(item)
+
+
+def load_csv():
+    matchup_stats = []
+    with open("matchup_stats.csv", "r") as fp:
+        reader = csv.reader(fp)
+        next(reader)
+        for line in reader:
+            matchup_stats.append(line)
+    return matchup_stats
+
+matchup_stats = load_csv()
 
 def get_stats(first_seed, second_seed):
     global matchup_stats
@@ -38,59 +88,8 @@ def pick_winner_by_seed(a, b):
         pct = 0.015
     return a if random() < pct else b
     
-class Bracket():
-    bracket = []
-    matchup_stats = []
-
-    def progress_bracket(self, pick_winner):
-        last_round_winners = list.copy(self.bracket)
-        while len(last_round_winners) > 1:
-            i = 0 
-            winners = []
-            while i < (len(last_round_winners) / 2):
-                winners.append(pick_winner(last_round_winners[i], last_round_winners[i+1]))
-                i += 2
-            for winner in winners:
-                self.bracket.append(winner)
-            last_round_winners = list.copy(winners)
-
-    def __init__(self, bracket, matchup_stats, pick_winner):
-        self.bracket = list.copy(bracket)
-        self.first_round_size = len(bracket)
-        self.matchup_stats = matchup_stats
-        self.progress_bracket(pick_winner)
-
-    def print_bracket(self):
-        print(f"{self.bracket[0]["name"]}\t\t")
-        print(f"{self.bracket[1]["name"]}\t\t")
-        print(f"{self.bracket[2]["name"]}\t\t")
-        print(f"{self.bracket[3]["name"]}\t\t")
-        print(f"{self.bracket[4]["name"]}\t\t{self.bracket[16]["name"]}\t\t")
-        print(f"{self.bracket[5]["name"]}\t\t{self.bracket[17]["name"]}\t\t")
-        print(f"{self.bracket[6]["name"]}\t\t{self.bracket[18]["name"]}\t\t{self.bracket[24]["name"]}\t\t")
-        print(f"{self.bracket[7]["name"]}\t\t{self.bracket[19]["name"]}\t\t{self.bracket[25]["name"]}\t\t{self.bracket[28]["name"]}\t\t{self.bracket[30]["name"]}\t\t")
-        print(f"{self.bracket[8]["name"]}\t\t{self.bracket[20]["name"]}\t\t{self.bracket[26]["name"]}\t\t{self.bracket[29]["name"]}\t\t")
-        print(f"{self.bracket[9]["name"]}\t\t{self.bracket[21]["name"]}\t\t{self.bracket[27]["name"]}\t\t")
-        print(f"{self.bracket[10]["name"]}\t\t{self.bracket[22]["name"]}\t\t")
-        print(f"{self.bracket[11]["name"]}\t\t{self.bracket[23]["name"]}\t\t")
-        print(f"{self.bracket[12]["name"]}\t\t")
-        print(f"{self.bracket[13]["name"]}\t\t")
-        print(f"{self.bracket[14]["name"]}\t\t")
-        print(f"{self.bracket[15]["name"]}\t\t")
-
-
-def load_csv():
-    matchup_stats = []
-    with open("matchup_stats.csv", "r") as fp:
-        reader = csv.reader(fp)
-        next(reader)
-        for line in reader:
-            matchup_stats.append(line)
-    return matchup_stats
-
 def main():
-    matchup_stats = load_csv()
-    sim_bracket = Bracket(starting_bracket, matchup_stats)
+    sim_bracket = Bracket(starting_bracket, pick_winner_by_seed)
     sim_bracket.print_bracket()
 
 
