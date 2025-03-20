@@ -33,7 +33,6 @@ class Bracket():
                 i += 2
             self.bracket.append(winners)
             last_round_winners = list.copy(winners)
-        print(self.bracket)
 
     def __init__(self, initial_bracket, pick_winner):
         self.bracket.append(initial_bracket)
@@ -77,6 +76,9 @@ def pick_winner_by_seed(a, b):
     first_seed = a["seed"]
     second_seed = b["seed"]
     stats = get_stats(first_seed, second_seed)
+    # stats[5] is the win pct for the seed matchup 
+    # some matchups have never happened in the NCAAT yet
+    # so it just looks at the numbers for a matchup vs a higher oppponent seed 
     decrementer = 1
     while stats[5] == "NaN":
         stats = get_stats(first_seed, second_seed - decrementer)
