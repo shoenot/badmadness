@@ -1,28 +1,77 @@
+#!/usr/bin/env python3
 import csv
 from random import random
 from math import floor
 
-starting_bracket = [{"name": "one", "seed": 1},
-                    {"name": "sixteen", "seed": 16},
-                    {"name": "eight", "seed": 8},
-                    {"name": "nine", "seed": 9},
-                    {"name": "five", "seed": 5},
-                    {"name": "twelve", "seed": 12},
-                    {"name": "four", "seed": 4},
-                    {"name": "thirteen", "seed": 13},
-                    {"name": "six", "seed": 6},
-                    {"name": "eleven", "seed": 11},
-                    {"name": "three", "seed": 3},
-                    {"name": "fourteen", "seed": 14},
-                    {"name": "seven", "seed": 7},
-                    {"name": "ten", "seed": 10},
-                    {"name": "two", "seed": 2},
-                    {"name": "fifteen", "seed": 15}]
+south_region =      [{"name": "Auburn", "seed": 1},
+                    {"name": "Alabama St.", "seed": 16},
+                    {"name": "Louisville", "seed": 8},
+                    {"name": "Creighton", "seed": 9},
+                    {"name": "Michigan", "seed": 5},
+                    {"name": "UC San Diego", "seed": 12},
+                    {"name": "Texas A&M", "seed": 4},
+                    {"name": "Yale", "seed": 13},
+                    {"name": "Ole Miss", "seed": 6},
+                    {"name": "North Carolina", "seed": 11},
+                    {"name": "Iowa St.", "seed": 3},
+                    {"name": "Lipscomb", "seed": 14},
+                    {"name": "Marquette", "seed": 7},
+                    {"name": "New Mexico", "seed": 10},
+                    {"name": "Michigan St.", "seed": 2},
+                    {"name": "Bryant", "seed": 15}]
+
+east_region =       [{"name": "Duke", "seed": 1},
+                    {"name": "Mount St. Mary's", "seed": 16},
+                    {"name": "Mississippi St.", "seed": 8},
+                    {"name": "Baylor", "seed": 9},
+                    {"name": "Oregon", "seed": 5},
+                    {"name": "Liberty", "seed": 12},
+                    {"name": "Arizona", "seed": 4},
+                    {"name": "Akron", "seed": 13},
+                    {"name": "BYU", "seed": 6},
+                    {"name": "VCU", "seed": 11},
+                    {"name": "Wisconsin", "seed": 3},
+                    {"name": "Montana", "seed": 14},
+                    {"name": "St. Mary's", "seed": 7},
+                    {"name": "Vanderbilt", "seed": 10},
+                    {"name": "Alabama", "seed": 2},
+                    {"name": "Robert Morris", "seed": 15}]
+
+west_region =       [{"name": "Florida", "seed": 1},
+                    {"name": "Norfolk St.", "seed": 16},
+                    {"name": "UConn", "seed": 8},
+                    {"name": "Oklahoma", "seed": 9},
+                    {"name": "Memphis", "seed": 5},
+                    {"name": "Colorado St.", "seed": 12},
+                    {"name": "Maryland", "seed": 4},
+                    {"name": "Grand Canyon", "seed": 13},
+                    {"name": "Missouri", "seed": 6},
+                    {"name": "Drake", "seed": 11},
+                    {"name": "Texas Tech", "seed": 3},
+                    {"name": "UNC Wilmington", "seed": 14},
+                    {"name": "Kansas", "seed": 7},
+                    {"name": "Arkansas", "seed": 10},
+                    {"name": "St John's", "seed": 2},
+                    {"name": "Omaha", "seed": 15}]
+
+midwest_region =    [{"name": "Houston", "seed": 1},
+                    {"name": "SIU Edwardsville", "seed": 16},
+                    {"name": "Gonzaga", "seed": 8},
+                    {"name": "Georgia", "seed": 9},
+                    {"name": "Clemson", "seed": 5},
+                    {"name": "McNeese", "seed": 12},
+                    {"name": "Purdue", "seed": 4},
+                    {"name": "High Point", "seed": 13},
+                    {"name": "Illinois", "seed": 6},
+                    {"name": "Xavier", "seed": 11},
+                    {"name": "Kentucky", "seed": 3},
+                    {"name": "Troy", "seed": 14},
+                    {"name": "UCLA", "seed": 7},
+                    {"name": "Utah St.", "seed": 10},
+                    {"name": "Tennessee", "seed": 2},
+                    {"name": "Wofford", "seed": 15}]
 
 class Bracket():
-    bracket = []
-    matchup_stats = []
-
     def progress_bracket(self, pick_winner):
         last_round_winners = list.copy(self.bracket[-1])
         while len(last_round_winners) > 1:
@@ -35,6 +84,7 @@ class Bracket():
             last_round_winners = list.copy(winners)
 
     def __init__(self, initial_bracket, pick_winner):
+        self.bracket = []
         self.bracket.append(initial_bracket)
         self.first_round_size = len(initial_bracket)
         self.progress_bracket(pick_winner)
@@ -91,8 +141,21 @@ def pick_winner_by_seed(a, b):
     return a if random() < pct else b
     
 def main():
-    sim_bracket = Bracket(starting_bracket, pick_winner_by_seed)
-    sim_bracket.print_bracket()
+    south_bracket = Bracket(south_region, pick_winner_by_seed)
+    print("South Region: \n")
+    south_bracket.print_bracket()
+
+    east_bracket = Bracket(east_region, pick_winner_by_seed)
+    print("East Region: \n")
+    east_bracket.print_bracket()
+
+    west_bracket = Bracket(west_region, pick_winner_by_seed)
+    print("West Region: \n")
+    west_bracket.print_bracket()
+
+    midwest_bracket = Bracket(midwest_region, pick_winner_by_seed)
+    print("Midwest Region: \n")
+    midwest_bracket.print_bracket()
 
 
 if __name__ == "__main__":
