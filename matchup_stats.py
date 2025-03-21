@@ -35,7 +35,7 @@ def populate_stats(matchups):
             # Populate loss 
             matchups[int(lts)-1][int(wts)-1].add_loss()
 
-def main():
+def generate_matchup_stats():
     seeds = [x for x in range(1, 17)]
     matchups = []
 
@@ -56,4 +56,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    generate_matchup_stats()

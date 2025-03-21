@@ -78,7 +78,7 @@ brackets_2025 =     [["South Region",
 
 def load_csv():
     matchup_stats = []
-    with open("matchup_stats.csv", "r") as fp:
+    with open("data/matchup_stats.csv", "r") as fp:
         reader = csv.reader(fp)
         next(reader)
         for line in reader:
