@@ -76,6 +76,60 @@ brackets_2025 =     [["South Region",
                         {"name": "Tennessee", "seed": 2},
                         {"name": "Wofford", "seed": 15}]]]
 
+class Matchup():
+    def __init__(self, team_seed, opp_seed):
+        self.team_seed = team_seed
+        self.opp_seed = opp_seed
+        self.games = 0
+        self.team_wins = 0
+        self.opp_wins = 0
+
+    def add_win(self):
+        self.games += 1
+        self.team_wins += 1 
+
+    def add_loss(self):
+        self.games += 1 
+        self.opp_wins += 1
+
+    def get_list(self):
+        try:
+            self.pct = round(self.team_wins/self.games, 3)
+        except ZeroDivisionError:
+            self.pct = "NaN"
+        listform = [self.team_seed, self.opp_seed, self.games, self.team_wins, self.opp_wins, self.pct]
+        return listform
+
+
+def populate_stats(matchups):
+    with open("data/combined.csv", "r", newline="") as fp:
+        reader = csv.reader(fp)
+        next(reader)
+        for y, r, wtn, wts, wtsc, ltn, lts, ltsc in reader:
+            # Populate win 
+            matchups[int(wts)-1][int(lts)-1].add_win()
+            # Populate loss 
+            matchups[int(lts)-1][int(wts)-1].add_loss()
+
+def generate_matchup_stats():
+    seeds = [x for x in range(1, 17)]
+    matchups = []
+
+    for xseed in seeds:
+        inner_matchups = []
+        for yseed in seeds:
+            inner_matchups.append(Matchup(xseed, yseed))
+        matchups.append(inner_matchups)
+    
+    populate_stats(matchups)
+
+    with open("data/matchup_stats.csv", "w", newline="") as fp:
+        writer = csv.writer(fp)
+        writer.writerow(["team_seed", "opp_seed", "games", "wins", "losses", "pct"])
+        for xseed in matchups:
+            for yseed in xseed:
+                writer.writerow(yseed.get_list())
+
 def load_csv():
     matchup_stats = []
     with open("data/matchup_stats.csv", "r") as fp:
@@ -110,10 +164,16 @@ def pick_winner_by_seed(a, b):
     
 
 if __name__ == "__main__":
-    matchup_stats = load_csv()
+    try:
+        print("Using found matchup_stats.csv")
+        matchup_stats = load_csv()
+    except FileNotFoundError:
+        print("Generating matchup_stats.csv...")
+        generate_matchup_stats()
+        matchup_stats = load_csv()
 
     for region_name, region_bracket in brackets_2025:
         bracket_object = Bracket(region_bracket)
         bracket_object.play_out_bracket(pick_winner_by_seed)
-        print(BOLD + PURPLE + "\nSouth Region: \n" + END)
+        print(BOLD + PURPLE + f"\n{region_name}:\n" + END)
         bracket_object.print_bracket(formatting=lambda t: f" {t["seed"]} {t["name"]}")
